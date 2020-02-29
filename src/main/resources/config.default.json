@@ -1,0 +1,11 @@
+{
+  "token": "",
+  "maxShards": 1,
+  "rpc": {
+    "change": 60,
+    "activities": [
+      "Hallo 1",
+      "Hallo 2"
+    ]
+  }
+}
