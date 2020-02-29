@@ -1,10 +1,11 @@
 package com.github.panapeepo.config;
 
-import com.github.panapeepo.Validate;
 import com.github.panapeepo.misc.FileUtils;
+import com.google.common.base.Preconditions;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -46,7 +47,7 @@ public class SimpleJsonObject implements Configurable<SimpleJsonObject>, JsonSer
             e.printStackTrace();
         }
         if (jsonElement != null) {
-            Validate.isTrue(jsonElement.isJsonObject(), "JsonInput must be a json object, not " + jsonElement.getClass().getSimpleName());
+            Preconditions.checkArgument(jsonElement.isJsonObject(), "JsonInput must be a json object, not " + jsonElement.getClass().getSimpleName());
             this.jsonObject = jsonElement.getAsJsonObject();
         }
     }
@@ -59,14 +60,15 @@ public class SimpleJsonObject implements Configurable<SimpleJsonObject>, JsonSer
             e.printStackTrace();
         }
         if (jsonElement != null) {
-            Validate.isTrue(jsonElement.isJsonObject() || jsonElement.isJsonNull(), "JsonInput must be a json object or null, not " + jsonElement.getClass().getSimpleName());
+            Preconditions.checkArgument(jsonElement.isJsonObject()
+                    || jsonElement.isJsonNull(), "JsonInput must be a json object or null, not " + jsonElement.getClass().getSimpleName());
             this.jsonObject = jsonElement.getAsJsonObject();
         }
     }
 
     public SimpleJsonObject(Object object) {
         JsonElement jsonElement = GSON.get().toJsonTree(object);
-        Validate.isTrue(jsonElement.isJsonObject(), "JsonInput must be a json object, not " + jsonElement.getClass().getSimpleName());
+        Preconditions.checkArgument(jsonElement.isJsonObject(), "JsonInput must be a json object, not " + jsonElement.getClass().getSimpleName());
         this.jsonObject = jsonElement.getAsJsonObject();
     }
 
@@ -353,5 +355,13 @@ public class SimpleJsonObject implements Configurable<SimpleJsonObject>, JsonSer
     @Override
     public int hashCode() {
         return this.jsonObject == null ? super.hashCode() : this.jsonObject.hashCode();
+    }
+
+    public SimpleJsonObject appendDefault(@Nonnull InputStream inputStream) {
+        SimpleJsonObject jsonObject = SimpleJsonObject.load(inputStream);
+        for (String key : jsonObject.keys()) {
+            this.appendIfNotExists(key, jsonObject.get(key));
+        }
+        return this;
     }
 }
