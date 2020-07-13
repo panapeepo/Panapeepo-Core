@@ -2,6 +2,8 @@ package com.github.panapeepo;
 
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
+import com.github.derrop.simplecommand.map.CommandMap;
+import com.github.derrop.simplecommand.map.DefaultCommandMap;
 import com.github.panapeepo.api.Panapeepo;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.plugin.PluginManager;
@@ -40,6 +42,9 @@ public class PanapeepoCore implements Panapeepo {
     private final EventManager eventManager = new DefaultEventManager();
     private final PluginManager pluginManager = new DefaultPluginManager(this);
 
+    private final CommandMap consoleCommandMap = new DefaultCommandMap();
+    private final CommandMap discordCommandMap = new DefaultCommandMap();
+
     public static void main(String[] args) throws IOException {
         Path configPath = Paths.get("config.yml");
         if (!Files.exists(configPath)) {
@@ -65,6 +70,8 @@ public class PanapeepoCore implements Panapeepo {
     }
 
     PanapeepoCore(@Nonnull Document config, @Nonnull String[] args) throws LoginException {
+        this.consoleCommandMap.registerDefaultHelpCommand();
+
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.create(config.getString("token"), Arrays.asList(GatewayIntent.values()));
         builder.setAutoReconnect(true);
         this.shardManager = builder.build();
@@ -107,6 +114,16 @@ public class PanapeepoCore implements Panapeepo {
     @Override
     public @NotNull ShardManager getShardManager() {
         return this.shardManager;
+    }
+
+    @Override
+    public @NotNull CommandMap getConsoleCommandMap() {
+        return this.consoleCommandMap;
+    }
+
+    @Override
+    public @NotNull CommandMap getDiscordCommandMap() {
+        return this.discordCommandMap;
     }
 
     @Override
