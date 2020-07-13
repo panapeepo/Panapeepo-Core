@@ -91,12 +91,15 @@ public class PanapeepoCore implements Panapeepo {
         List<RpcActivity> activities = rpc.get("activities", TypeToken.getParameterized(List.class, RpcActivity.class).getType());
 
         this.timer.scheduleAtFixedRate(() -> {
+            RpcActivity activity = activities.get(this.random.nextInt(activities.size()));
+            if (activity.getText() == null || activity.getType() == null) {
+                return;
+            }
+
             for (JDA shard : shardManager.getShards()) {
-                if (shard != null)
-                    shard.getPresence().setActivity(
-                            Activity.playing(activities.get(random.nextInt(activities.size())) +
-                                    " | #" + shard.getShardInfo().getShardId()
-                            ));
+                if (shard != null) {
+                    shard.getPresence().setActivity(Activity.of(activity.getType(), activity.getText() + " | #" + shard.getShardInfo().getShardId()));
+                }
             }
         }, 0, rpc.getLong("changeInterval"), TimeUnit.SECONDS);
     }
