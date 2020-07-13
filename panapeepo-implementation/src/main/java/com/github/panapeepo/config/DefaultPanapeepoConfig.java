@@ -6,11 +6,13 @@ import com.github.panapeepo.api.config.PanapeepoConfig;
 public class DefaultPanapeepoConfig implements PanapeepoConfig {
 
     private final String token;
+    private final String commandPrefix;
     private final int maxShards;
     private final DefaultActivityConfig presence;
 
-    public DefaultPanapeepoConfig(String token, int maxShards, DefaultActivityConfig presence) {
+    public DefaultPanapeepoConfig(String token, String commandPrefix, int maxShards, DefaultActivityConfig presence) {
         this.token = token;
+        this.commandPrefix = commandPrefix;
         this.maxShards = maxShards;
         this.presence = presence;
     }
@@ -18,6 +20,11 @@ public class DefaultPanapeepoConfig implements PanapeepoConfig {
     @Override
     public String getToken() {
         return this.token;
+    }
+
+    @Override
+    public String getCommandPrefix() {
+        return this.commandPrefix;
     }
 
     @Override

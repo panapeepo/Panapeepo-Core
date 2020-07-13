@@ -9,6 +9,7 @@ import com.github.panapeepo.api.config.ConfigPresence;
 import com.github.panapeepo.api.config.PanapeepoConfig;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.plugin.PluginManager;
+import com.github.panapeepo.command.CommandListener;
 import com.github.panapeepo.config.DefaultPanapeepoConfig;
 import com.github.panapeepo.event.DefaultEventManager;
 import com.github.panapeepo.plugin.DefaultPluginManager;
@@ -80,6 +81,9 @@ public class PanapeepoCore implements Panapeepo {
 
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.create(config.getToken(), Arrays.asList(GatewayIntent.values()));
         builder.setAutoReconnect(true);
+
+        builder.addEventListeners(new CommandListener(this));
+
         this.shardManager = builder.build();
 
         for (int i = 0; i < config.getMaxShards(); i++) {
