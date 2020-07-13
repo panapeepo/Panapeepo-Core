@@ -1,6 +1,7 @@
 package com.github.panapeepo.api;
 
 import com.github.derrop.simplecommand.map.CommandMap;
+import com.github.panapeepo.api.config.PanapeepoConfig;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.plugin.PluginManager;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -22,6 +23,9 @@ public interface Panapeepo {
 
     @NotNull
     CommandMap getDiscordCommandMap();
+
+    @NotNull
+    PanapeepoConfig getConfig();
 
     void shutdown();
 

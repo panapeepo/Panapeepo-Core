@@ -1,15 +1,17 @@
 package com.github.panapeepo;
 
-import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.github.derrop.simplecommand.map.CommandMap;
 import com.github.derrop.simplecommand.map.DefaultCommandMap;
 import com.github.panapeepo.api.Panapeepo;
+import com.github.panapeepo.api.config.ActivityConfig;
+import com.github.panapeepo.api.config.ConfigPresence;
+import com.github.panapeepo.api.config.PanapeepoConfig;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.plugin.PluginManager;
+import com.github.panapeepo.config.DefaultPanapeepoConfig;
 import com.github.panapeepo.event.DefaultEventManager;
 import com.github.panapeepo.plugin.DefaultPluginManager;
-import com.google.gson.reflect.TypeToken;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -45,6 +47,8 @@ public class PanapeepoCore implements Panapeepo {
     private final CommandMap consoleCommandMap = new DefaultCommandMap();
     private final CommandMap discordCommandMap = new DefaultCommandMap();
 
+    private final PanapeepoConfig config;
+
     public static void main(String[] args) throws IOException {
         Path configPath = Paths.get("config.yml");
         if (!Files.exists(configPath)) {
@@ -56,8 +60,8 @@ public class PanapeepoCore implements Panapeepo {
             System.exit(-1);
         }
 
-        Document config = Documents.yamlStorage().read(configPath);
-        if (config.getString("token").isEmpty()) {
+        PanapeepoConfig config = Documents.yamlStorage().read(configPath).toInstanceOf(DefaultPanapeepoConfig.class);
+        if (config.getToken().isEmpty()) {
             System.out.println("Set the bot token in the config and start the bot again!");
             System.exit(-1);
         }
@@ -69,29 +73,30 @@ public class PanapeepoCore implements Panapeepo {
         }
     }
 
-    PanapeepoCore(@Nonnull Document config, @Nonnull String[] args) throws LoginException {
+    PanapeepoCore(@Nonnull PanapeepoConfig config, @Nonnull String[] args) throws LoginException {
+        this.config = config;
+
         this.consoleCommandMap.registerDefaultHelpCommand();
 
-        DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.create(config.getString("token"), Arrays.asList(GatewayIntent.values()));
+        DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.create(config.getToken(), Arrays.asList(GatewayIntent.values()));
         builder.setAutoReconnect(true);
         this.shardManager = builder.build();
 
-        for (int i = 0; i < config.getInt("maxShards"); i++) {
+        for (int i = 0; i < config.getMaxShards(); i++) {
             this.shardManager.start(i);
         }
 
-        Document rpc = config.getDocument("rpc");
-        this.startRPCTimer(rpc);
+        this.startRPCTimer(config.getActivities());
 
         this.pluginManager.loadPlugins(Paths.get("plugins"));
         this.pluginManager.enablePlugins();
     }
 
-    private void startRPCTimer(Document rpc) {
-        List<RpcActivity> activities = rpc.get("activities", TypeToken.getParameterized(List.class, RpcActivity.class).getType());
+    private void startRPCTimer(ActivityConfig config) {
+        List<ConfigPresence> activities = config.getActivities();
 
         this.timer.scheduleAtFixedRate(() -> {
-            RpcActivity activity = activities.get(this.random.nextInt(activities.size()));
+            ConfigPresence activity = activities.get(this.random.nextInt(activities.size()));
             if (activity.getText() == null || activity.getType() == null) {
                 return;
             }
@@ -101,7 +106,7 @@ public class PanapeepoCore implements Panapeepo {
                     shard.getPresence().setActivity(Activity.of(activity.getType(), activity.getText() + " | #" + shard.getShardInfo().getShardId()));
                 }
             }
-        }, 0, rpc.getLong("changeInterval"), TimeUnit.SECONDS);
+        }, 0, config.getUpdateInterval(), TimeUnit.SECONDS);
     }
 
     @Override
@@ -130,7 +135,13 @@ public class PanapeepoCore implements Panapeepo {
     }
 
     @Override
+    public @NotNull PanapeepoConfig getConfig() {
+        return this.config;
+    }
+
+    @Override
     public void shutdown() {
         this.pluginManager.disablePlugins();
+        System.exit(0);
     }
 }

@@ -1,7 +1,7 @@
 token: ''
 maxShards: 1
-rpc:
-  changeInterval: 60
+presence:
+  updateInterval: 60
   activities:
     - type: 'DEFAULT'
       text: 'Text 1'
