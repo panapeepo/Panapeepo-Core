@@ -1,0 +1,8 @@
+token: ''
+maxShards: 1
+rpc:
+  changeInterval: 60
+  activities:
+    - 'Text 1'
+    - 'Text 2'
+    - 'Text 3'
