@@ -9,14 +9,17 @@ import com.github.panapeepo.api.config.ConfigPresence;
 import com.github.panapeepo.api.config.PanapeepoConfig;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.plugin.PluginManager;
+import com.github.panapeepo.api.util.MessageUtils;
 import com.github.panapeepo.command.CommandListener;
 import com.github.panapeepo.command.discord.HelpCommand;
 import com.github.panapeepo.config.DefaultPanapeepoConfig;
 import com.github.panapeepo.event.DefaultEventManager;
 import com.github.panapeepo.plugin.DefaultPluginManager;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -171,6 +174,15 @@ public class PanapeepoCore implements Panapeepo {
             return "unknown";
         }
         return version;
+    }
+
+    @Override
+    public @NotNull EmbedBuilder createDefaultEmbed(User user) {
+        var embed = new EmbedBuilder();
+
+        MessageUtils.setDefaultFooter(this, user, embed);
+
+        return embed;
     }
 
     @Override

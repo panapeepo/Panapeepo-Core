@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.github.derrop</groupId>
             <artifactId>simplecommand</artifactId>
-            <version>1.1-RELEASE</version>
+            <version>1.2-RELEASE</version>
         </dependency>
 
         <dependency>
