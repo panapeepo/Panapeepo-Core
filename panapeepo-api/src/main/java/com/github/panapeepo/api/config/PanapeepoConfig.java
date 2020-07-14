@@ -10,4 +10,6 @@ public interface PanapeepoConfig {
 
     ActivityConfig getActivities();
 
+    boolean commandsCaseSensitive();
+
 }

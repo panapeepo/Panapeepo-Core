@@ -21,6 +21,9 @@ public class CommandListener extends ListenerAdapter {
         }
         String prefix = this.panapeepo.getConfig().getCommandPrefix();
         String input = event.getMessage().getContentRaw();
+        if (!this.panapeepo.getConfig().commandsCaseSensitive()) {
+            input = input.toLowerCase();
+        }
         if (!input.startsWith(prefix)) {
             return;
         }

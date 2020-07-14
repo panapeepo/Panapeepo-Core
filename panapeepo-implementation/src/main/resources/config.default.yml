@@ -1,6 +1,7 @@
 token: ''
 maxShards: 1
 commandPrefix: 'pp!'
+commandsCaseSensitive: false
 presence:
   updateInterval: 60
   activities:
