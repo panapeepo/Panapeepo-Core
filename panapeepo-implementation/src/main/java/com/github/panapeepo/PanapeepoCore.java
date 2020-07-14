@@ -13,6 +13,7 @@ import com.github.panapeepo.api.util.MessageUtils;
 import com.github.panapeepo.command.CommandListener;
 import com.github.panapeepo.command.discord.HelpCommand;
 import com.github.panapeepo.command.discord.InfoCommand;
+import com.github.panapeepo.command.discord.PluginsCommand;
 import com.github.panapeepo.config.DefaultPanapeepoConfig;
 import com.github.panapeepo.event.DefaultEventManager;
 import com.github.panapeepo.plugin.DefaultPluginManager;
@@ -102,6 +103,7 @@ public class PanapeepoCore implements Panapeepo {
 
         this.discordCommandMap.registerSubCommands(new HelpCommand(this));
         this.discordCommandMap.registerSubCommands(new InfoCommand(this));
+        this.discordCommandMap.registerSubCommands(new PluginsCommand(this));
 
         builder.addEventListeners(new CommandListener(this));
 
