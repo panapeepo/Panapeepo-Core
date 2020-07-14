@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PanapeepoCore implements Panapeepo {
 
+    private final long started;
     private final ScheduledExecutorService timer = Executors.newScheduledThreadPool(4);
     private final Random random = new Random();
     private final ShardManager shardManager;
@@ -78,9 +79,8 @@ public class PanapeepoCore implements Panapeepo {
     }
 
     PanapeepoCore(@Nonnull PanapeepoConfig config, @Nonnull String[] args) throws LoginException, IOException {
-        System.out.println(
-                String.format("Starting Panapeepo version %s (%s)", this.getCurrentVersion(), this.getCurrentCommit())
-        );
+        this.started = System.currentTimeMillis();
+        System.out.println(String.format("Starting Panapeepo version %s (%s)", this.getCurrentVersion(), this.getCurrentCommit()));
         var pluginsPath = Paths.get("plugins");
         if (!Files.exists(pluginsPath)) {
             Files.createDirectory(pluginsPath);
@@ -114,6 +114,12 @@ public class PanapeepoCore implements Panapeepo {
         this.startRPCTimer(config.getActivities());
 
         this.pluginManager.enablePlugins();
+        System.out.println(String.format(
+                "Started Panapeepo (Took %.2fs)! Enabled %s plugin(s) and started %s shard(s)",
+                ((double)System.currentTimeMillis() - (double)this.started) / (double) 1000,
+                this.pluginManager.getPlugins().size(),
+                this.shardManager.getShardsTotal()
+        ));
     }
 
     private void startRPCTimer(ActivityConfig config) {
