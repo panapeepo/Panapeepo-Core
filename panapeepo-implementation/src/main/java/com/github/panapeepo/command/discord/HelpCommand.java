@@ -33,8 +33,6 @@ public class HelpCommand {
                 String.format("The current Command-Prefix for this Guild is `%s`.", this.panapeepo.getConfig().getCommandPrefix())
         );
 
-        MessageUtils.setDefaultFooter(this.panapeepo, user, embed);
-
         panapeepo.getDiscordCommandMap().getCommands().forEach(command -> {
             var title = "`" + String.join("`, `", command.getAliases()) + "`";
             embed.addField(

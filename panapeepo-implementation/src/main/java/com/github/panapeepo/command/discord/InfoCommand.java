@@ -29,7 +29,6 @@ public class InfoCommand {
         embed.setTitle("Info");
         embed.setThumbnail(sender.getChannel().getJDA().getSelfUser().getAvatarUrl());
         embed.setTimestamp(Instant.now());
-        MessageUtils.setDefaultFooter(this.panapeepo, user, embed);
 
         embed.addField("Version", String.format("%s (Commit: %s)", this.panapeepo.getCurrentVersion(), this.panapeepo.getCurrentCommit()), true);
         embed.addField("Memory usage", String.format("%.2f MB / %.2f MB", panapeepo.getUsedMemory(), panapeepo.getMaxMemory()), true);
