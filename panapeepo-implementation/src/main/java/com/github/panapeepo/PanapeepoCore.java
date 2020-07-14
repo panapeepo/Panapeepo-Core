@@ -56,7 +56,7 @@ public class PanapeepoCore implements Panapeepo {
                  OutputStream outputStream = Files.newOutputStream(configPath)) {
                 Objects.requireNonNull(inputStream).transferTo(outputStream);
             }
-
+            System.out.println("Config created. Edit the configuration file and start the bot again!");
             System.exit(-1);
         }
 
@@ -122,7 +122,7 @@ public class PanapeepoCore implements Panapeepo {
 
             for (JDA shard : shardManager.getShards()) {
                 if (shard != null) {
-                    shard.getPresence().setActivity(Activity.of(activity.getType(), activity.getText() + " | #" + shard.getShardInfo().getShardId()));
+                    shard.getPresence().setActivity(Activity.of(activity.getType(), activity.getText() + " • #" + shard.getShardInfo().getShardId()));
                 }
             }
         }, 0, config.getUpdateInterval(), TimeUnit.SECONDS);
