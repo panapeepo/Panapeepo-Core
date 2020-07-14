@@ -6,7 +6,6 @@ import com.github.panapeepo.api.Panapeepo;
 import com.github.panapeepo.command.DiscordCommandSender;
 
 import javax.annotation.Nonnull;
-import java.time.Instant;
 
 @Command(
         aliases = {"help", "?", "commands"}
@@ -25,7 +24,6 @@ public class HelpCommand {
         this.panapeepo.sendDefaultEmbed(sender.getChannel(), user, embed -> {
             embed.setTitle("Help");
             embed.setThumbnail(sender.getChannel().getJDA().getSelfUser().getAvatarUrl());
-            embed.setTimestamp(Instant.now());
             embed.setDescription(
                     String.format("The current Command-Prefix for this Guild is `%s`.", this.panapeepo.getConfig().getCommandPrefix())
             );

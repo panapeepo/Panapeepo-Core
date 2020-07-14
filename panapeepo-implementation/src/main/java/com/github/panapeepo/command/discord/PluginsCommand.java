@@ -6,7 +6,6 @@ import com.github.panapeepo.api.Panapeepo;
 import com.github.panapeepo.command.DiscordCommandSender;
 
 import javax.annotation.Nonnull;
-import java.time.Instant;
 
 @Command(
         aliases = {"plugins", "modules", "addons"}
@@ -25,8 +24,6 @@ public class PluginsCommand {
         this.panapeepo.sendDefaultEmbed(sender.getChannel(), user, embed -> {
             embed.setTitle("Plugins");
             embed.setThumbnail(sender.getChannel().getJDA().getSelfUser().getAvatarUrl());
-            embed.setTimestamp(Instant.now());
-
 
             panapeepo.getPluginManager().getPlugins().forEach(pluginContainer -> {
                 var plugin = pluginContainer.getPlugin();

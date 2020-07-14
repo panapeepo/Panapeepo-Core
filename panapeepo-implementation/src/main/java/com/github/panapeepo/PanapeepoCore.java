@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -193,6 +194,7 @@ public class PanapeepoCore implements Panapeepo {
         var embed = new EmbedBuilder();
 
         MessageUtils.setDefaultFooter(this, user, embed);
+        embed.setTimestamp(Instant.now());
 
         return embed;
     }

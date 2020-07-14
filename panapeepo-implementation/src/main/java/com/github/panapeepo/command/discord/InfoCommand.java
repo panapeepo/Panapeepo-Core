@@ -6,7 +6,6 @@ import com.github.panapeepo.api.Panapeepo;
 import com.github.panapeepo.command.DiscordCommandSender;
 
 import javax.annotation.Nonnull;
-import java.time.Instant;
 
 @Command(
         aliases = {"version", "about", "info"}
@@ -25,7 +24,6 @@ public class InfoCommand {
         this.panapeepo.sendDefaultEmbed(sender.getChannel(), user, embed -> {
             embed.setTitle("Info");
             embed.setThumbnail(sender.getChannel().getJDA().getSelfUser().getAvatarUrl());
-            embed.setTimestamp(Instant.now());
 
             embed.addField("Version", String.format("%s (Commit: %s)", this.panapeepo.getCurrentVersion(), this.panapeepo.getCurrentCommit()), true);
             embed.addField("Memory usage", String.format("%.2f MB / %.2f MB", panapeepo.getUsedMemory(), panapeepo.getMaxMemory()), true);
