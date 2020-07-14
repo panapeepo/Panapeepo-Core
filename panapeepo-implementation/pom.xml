@@ -19,4 +19,24 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Main-Class>com.github.panapeepo.PanapeepoCore</Main-Class>
+                            <Version>${project.version}</Version>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Specification-Version>${describe}</Specification-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
