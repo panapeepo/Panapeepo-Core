@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PanapeepoCore implements Panapeepo {
 
-    private final long started;
+    private final long startupTime;
     private final ScheduledExecutorService timer = Executors.newScheduledThreadPool(4);
     private final Random random = new Random();
     private final ShardManager shardManager;
@@ -79,7 +79,7 @@ public class PanapeepoCore implements Panapeepo {
     }
 
     PanapeepoCore(@Nonnull PanapeepoConfig config, @Nonnull String[] args) throws LoginException, IOException {
-        this.started = System.currentTimeMillis();
+        this.startupTime = System.currentTimeMillis();
         System.out.println(String.format("Starting Panapeepo version %s (%s)", this.getCurrentVersion(), this.getCurrentCommit()));
         var pluginsPath = Paths.get("plugins");
         if (!Files.exists(pluginsPath)) {
@@ -116,7 +116,7 @@ public class PanapeepoCore implements Panapeepo {
         this.pluginManager.enablePlugins();
         System.out.println(String.format(
                 "Started Panapeepo (Took %.2fs)! Enabled %s plugin(s) and started %s shard(s)",
-                ((double)System.currentTimeMillis() - (double)this.started) / (double) 1000,
+                ((double)System.currentTimeMillis() - (double)this.startupTime) / (double) 1000,
                 this.pluginManager.getPlugins().size(),
                 this.shardManager.getShardsTotal()
         ));
@@ -216,4 +216,19 @@ public class PanapeepoCore implements Panapeepo {
     public double getFreeMemory() {
         return (double) Runtime.getRuntime().freeMemory() / ((double) 1024 * 1024);
     }
+
+    @Override
+    public long getStartupTime() {
+        return this.startupTime;
+    }
+
+    @Override
+    public @NotNull String formatMillis(long millis) {
+        long seconds = (millis / 1000) % 60;
+        long minutes = (millis / (1000 * 60)) % 60;
+        long hours = (millis / (1000 * 60 * 60)) % 24;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
 }

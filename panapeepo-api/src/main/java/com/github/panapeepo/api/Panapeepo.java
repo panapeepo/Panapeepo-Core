@@ -46,4 +46,9 @@ public interface Panapeepo {
 
     double getFreeMemory();
 
+    long getStartupTime();
+
+    @NotNull
+    String formatMillis(long millis);
+
 }
