@@ -11,7 +11,6 @@
 
     <artifactId>panapeepo-api</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>com.github.derrop</groupId>
@@ -37,5 +36,4 @@
             </exclusions>
         </dependency>
     </dependencies>
-
 </project>
