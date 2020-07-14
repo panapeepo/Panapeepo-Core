@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -39,6 +40,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class PanapeepoCore implements Panapeepo {
 
@@ -118,7 +120,7 @@ public class PanapeepoCore implements Panapeepo {
         this.pluginManager.enablePlugins();
         System.out.println(String.format(
                 "Started Panapeepo (Took %.2fs)! Enabled %s plugin(s) and started %s shard(s)",
-                ((double)System.currentTimeMillis() - (double)this.startupTime) / (double) 1000,
+                ((double) System.currentTimeMillis() - (double) this.startupTime) / (double) 1000,
                 this.pluginManager.getPlugins().size(),
                 this.shardManager.getShardsTotal()
         ));
@@ -233,4 +235,10 @@ public class PanapeepoCore implements Panapeepo {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
+    @Override
+    public void sendDefaultEmbed(@NotNull MessageChannel channel, @NotNull User user, @NotNull Consumer<EmbedBuilder> consumer) {
+        var embed = this.createDefaultEmbed(user);
+        consumer.accept(embed);
+        channel.sendMessage(embed.build()).queue(message -> message.delete().queueAfter(2, TimeUnit.MINUTES));
+    }
 }

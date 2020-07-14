@@ -7,7 +7,6 @@ import com.github.panapeepo.command.DiscordCommandSender;
 
 import javax.annotation.Nonnull;
 import java.time.Instant;
-import java.util.concurrent.TimeUnit;
 
 @Command(
         aliases = {"help", "?", "commands"}
@@ -23,28 +22,24 @@ public class HelpCommand {
     @SubCommand()
     public void handle(@Nonnull DiscordCommandSender sender) {
         var user = sender.getMember().getUser();
-        var embed = this.panapeepo.createDefaultEmbed(user);
-
-        embed.setTitle("Help");
-        embed.setThumbnail(sender.getChannel().getJDA().getSelfUser().getAvatarUrl());
-        embed.setTimestamp(Instant.now());
-        embed.setDescription(
-                String.format("The current Command-Prefix for this Guild is `%s`.", this.panapeepo.getConfig().getCommandPrefix())
-        );
-
-        panapeepo.getDiscordCommandMap().getCommands().forEach(command -> {
-            var title = "`" + String.join("`, `", command.getAliases()) + "`";
-            embed.addField(
-                    title,
-                    command.getDescription() != null ?
-                            command.getDescription() : "",
-                    true
+        this.panapeepo.sendDefaultEmbed(sender.getChannel(), user, embed -> {
+            embed.setTitle("Help");
+            embed.setThumbnail(sender.getChannel().getJDA().getSelfUser().getAvatarUrl());
+            embed.setTimestamp(Instant.now());
+            embed.setDescription(
+                    String.format("The current Command-Prefix for this Guild is `%s`.", this.panapeepo.getConfig().getCommandPrefix())
             );
+
+            panapeepo.getDiscordCommandMap().getCommands().forEach(command -> {
+                var title = "`" + String.join("`, `", command.getAliases()) + "`";
+                embed.addField(
+                        title,
+                        command.getDescription() != null ?
+                                command.getDescription() : "",
+                        true
+                );
+            });
         });
-
-
-        sender.getChannel().sendMessage(embed.build())
-                .queue(message -> message.delete().queueAfter(2, TimeUnit.MINUTES));
     }
 
 }
