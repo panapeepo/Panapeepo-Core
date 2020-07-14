@@ -1,5 +1,7 @@
 package com.github.panapeepo.api.plugin;
 
+import net.dv8tion.jda.api.requests.GatewayIntent;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,5 +24,7 @@ public @interface Plugin {
     String website() default "";
 
     PluginDependency[] depends() default {};
+
+    GatewayIntent[] intents() default {};
 
 }

@@ -49,7 +49,7 @@ public class DefaultPluginManager implements PluginManager {
             Object instance = mainClass.getDeclaredConstructor(Panapeepo.class).newInstance(this.panapeepo);
 
             this.panapeepo.getEventManager().registerListener(instance);
-            this.plugins.add(new DefaultPluginContainer(classLoader, plugin, instance));
+            this.plugins.add(new DefaultPluginContainer(classLoader, plugin, instance, plugin.intents()));
 
             return plugin;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {

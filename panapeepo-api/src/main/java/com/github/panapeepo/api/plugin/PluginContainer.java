@@ -1,8 +1,10 @@
 package com.github.panapeepo.api.plugin;
 
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URLClassLoader;
+import java.util.EnumSet;
 
 public interface PluginContainer {
 
@@ -18,4 +20,5 @@ public interface PluginContainer {
     @NotNull
     Object getInstance();
 
+    EnumSet<GatewayIntent> getIntents();
 }
