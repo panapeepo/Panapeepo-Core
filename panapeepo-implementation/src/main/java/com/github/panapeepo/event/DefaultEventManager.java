@@ -6,15 +6,18 @@ import com.github.panapeepo.api.event.EventHandler;
 import com.github.panapeepo.api.event.EventManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 public class DefaultEventManager implements EventManager {
 
-    private Map<Class<? extends Event>, Collection<RegisteredListener>> registeredListeners = new HashMap<>();
+    private final Map<Class<? extends Event>, Collection<RegisteredListener>> registeredListeners = new ConcurrentHashMap<>();
 
     @Override
     public <T extends Event> T callEvent(@NotNull T event) {
