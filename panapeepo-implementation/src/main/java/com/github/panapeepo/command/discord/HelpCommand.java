@@ -38,9 +38,8 @@ public class HelpCommand {
 
         embed.setFooter(
                 String.format(
-                        "%s#%s • Panapeepo version %s (#%s)",
-                        user.getName(),
-                        user.getDiscriminator(),
+                        "%#s • Panapeepo version %s (#%s)",
+                        user,
                         this.panapeepo.getCurrentVersion(),
                         this.panapeepo.getCurrentCommit()
                 ),
