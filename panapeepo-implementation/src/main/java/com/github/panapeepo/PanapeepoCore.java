@@ -10,10 +10,12 @@ import com.github.panapeepo.api.config.PanapeepoConfig;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.plugin.PluginManager;
 import com.github.panapeepo.command.CommandListener;
+import com.github.panapeepo.command.discord.HelpCommand;
 import com.github.panapeepo.config.DefaultPanapeepoConfig;
 import com.github.panapeepo.event.DefaultEventManager;
 import com.github.panapeepo.plugin.DefaultPluginManager;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -28,10 +30,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -74,13 +73,27 @@ public class PanapeepoCore implements Panapeepo {
         }
     }
 
-    PanapeepoCore(@Nonnull PanapeepoConfig config, @Nonnull String[] args) throws LoginException {
+    PanapeepoCore(@Nonnull PanapeepoConfig config, @Nonnull String[] args) throws LoginException, IOException {
+        var pluginsPath = Paths.get("plugins");
+        if (!Files.exists(pluginsPath)) {
+            Files.createDirectory(pluginsPath);
+        }
         this.config = config;
 
         this.consoleCommandMap.registerDefaultHelpCommand();
 
-        DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.create(config.getToken(), Arrays.asList(GatewayIntent.values()));
+        this.pluginManager.loadPlugins(pluginsPath);
+
+        var intents = new ArrayList<>(Arrays.asList(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS));
+        this.pluginManager.getPlugins().forEach(pluginContainer -> {
+            intents.addAll(pluginContainer.getIntents());
+        });
+
+        DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.create(config.getToken(), intents);
         builder.setAutoReconnect(true);
+        builder.setStatus(OnlineStatus.ONLINE);
+
+        this.discordCommandMap.registerSubCommands(new HelpCommand(this));
 
         builder.addEventListeners(new CommandListener(this));
 
@@ -92,7 +105,6 @@ public class PanapeepoCore implements Panapeepo {
 
         this.startRPCTimer(config.getActivities());
 
-        this.pluginManager.loadPlugins(Paths.get("plugins"));
         this.pluginManager.enablePlugins();
     }
 
