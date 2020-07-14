@@ -1,4 +1,6 @@
-package com.github.panapeepo.api.event;
+package com.github.panapeepo.api.event.exception;
+
+import com.github.panapeepo.api.event.Event;
 
 import java.lang.reflect.Method;
 
