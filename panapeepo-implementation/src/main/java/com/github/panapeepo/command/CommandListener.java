@@ -16,6 +16,9 @@ public class CommandListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+        if (event.getAuthor().isBot()) {
+            return;
+        }
         String prefix = this.panapeepo.getConfig().getCommandPrefix();
         String input = event.getMessage().getContentRaw();
         if (!input.startsWith(prefix)) {
