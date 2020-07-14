@@ -39,8 +39,8 @@ public class HelpCommand {
             var title = "`" + String.join("`, `", command.getAliases()) + "`";
             embed.addField(
                     title,
-                    command.getDescription() != null && !command.getDescription().isBlank() ?
-                            command.getDescription() : "-",
+                    command.getDescription() != null ?
+                            command.getDescription() : "",
                     true
             );
         });
