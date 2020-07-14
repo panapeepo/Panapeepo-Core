@@ -1,5 +1,6 @@
 token: ''
 maxShards: 1
+commandPrefix: 'pp!'
 presence:
   updateInterval: 60
   activities:
