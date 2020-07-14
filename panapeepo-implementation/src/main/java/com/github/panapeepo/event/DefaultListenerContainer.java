@@ -1,6 +1,5 @@
 package com.github.panapeepo.event;
 
-import com.github.panapeepo.api.event.Event;
 import com.github.panapeepo.api.event.ListenerContainer;
 import com.github.panapeepo.api.event.exception.EventException;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +30,7 @@ class DefaultListenerContainer implements ListenerContainer {
     }
 
     @Override
-    public void call(@NotNull Event event) throws EventException {
+    public void call(@NotNull Object event) throws EventException {
         try {
             this.method.invoke(this.listenerInstance, event);
         } catch (InvocationTargetException | IllegalAccessException exception) {

@@ -6,9 +6,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface EventManager {
 
-    <T extends Event> T callEvent(@NotNull T event) throws EventException;
+    <T> T callEvent(@NotNull T event) throws EventException;
 
-    <T extends Event> T callEvent(@NotNull T event, @Nullable Object listener) throws EventException;
+    <T> T callEvent(@NotNull T event, @Nullable Object listener) throws EventException;
 
     void registerListener(@NotNull Object listener);
 

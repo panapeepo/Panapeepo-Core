@@ -3,7 +3,6 @@ package com.github.panapeepo.command.discord;
 import com.github.derrop.simplecommand.annotation.Command;
 import com.github.derrop.simplecommand.annotation.SubCommand;
 import com.github.panapeepo.api.Panapeepo;
-import com.github.panapeepo.api.util.MessageUtils;
 import com.github.panapeepo.command.DiscordCommandSender;
 
 import javax.annotation.Nonnull;

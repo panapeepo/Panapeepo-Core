@@ -1,6 +1,5 @@
 package com.github.panapeepo.event;
 
-import com.github.panapeepo.api.event.Event;
 import com.github.panapeepo.api.event.EventHandler;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.event.ListenerContainer;
@@ -16,12 +15,12 @@ public class DefaultEventManager implements EventManager {
     private final Collection<ListenerContainer> listenerContainers = new CopyOnWriteArrayList<>();
 
     @Override
-    public <T extends Event> T callEvent(@NotNull T event) {
+    public <T> T callEvent(@NotNull T event) {
         return this.callEvent(event, null);
     }
 
     @Override
-    public <T extends Event> T callEvent(@NotNull T event, @Nullable Object listener) {
+    public <T> T callEvent(@NotNull T event, @Nullable Object listener) {
         for (ListenerContainer listenerContainer : this.listenerContainers) {
             if (listenerContainer.getTargetEventClass().equals(event.getClass())) {
                 if (listener == null || listener == listenerContainer.getListenerInstance()) {
@@ -39,10 +38,6 @@ public class DefaultEventManager implements EventManager {
             if (method.isAnnotationPresent(EventHandler.class)) {
                 Class<?>[] parameters = method.getParameterTypes();
                 if (parameters.length != 1) {
-                    continue;
-                }
-
-                if (!Event.class.isAssignableFrom(parameters[0])) {
                     continue;
                 }
 

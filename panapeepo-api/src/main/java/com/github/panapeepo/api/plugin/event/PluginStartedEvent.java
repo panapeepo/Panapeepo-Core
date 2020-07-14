@@ -1,9 +1,8 @@
 package com.github.panapeepo.api.plugin.event;
 
 import com.github.panapeepo.api.Panapeepo;
-import com.github.panapeepo.api.event.Event;
 
-public class PluginStartedEvent extends Event {
+public class PluginStartedEvent {
 
     private final Panapeepo panapeepo;
 

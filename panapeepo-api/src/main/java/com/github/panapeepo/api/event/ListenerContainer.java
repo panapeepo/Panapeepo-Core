@@ -11,5 +11,5 @@ public interface ListenerContainer {
     @NotNull
     Class<?> getTargetEventClass();
 
-    void call(@NotNull Event event) throws EventException;
+    void call(@NotNull Object event) throws EventException;
 }
