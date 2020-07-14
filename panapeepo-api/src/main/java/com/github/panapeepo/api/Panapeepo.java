@@ -40,4 +40,10 @@ public interface Panapeepo {
     @NotNull
     EmbedBuilder createDefaultEmbed(User user);
 
+    double getMaxMemory();
+
+    double getUsedMemory();
+
+    double getFreeMemory();
+
 }

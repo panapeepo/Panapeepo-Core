@@ -193,4 +193,19 @@ public class PanapeepoCore implements Panapeepo {
         }
         return version;
     }
+
+    @Override
+    public double getMaxMemory() {
+        return (double) Runtime.getRuntime().totalMemory() / ((double) 1024 * 1024);
+    }
+
+    @Override
+    public double getUsedMemory() {
+        return getMaxMemory() - getFreeMemory();
+    }
+
+    @Override
+    public double getFreeMemory() {
+        return (double) Runtime.getRuntime().freeMemory() / ((double) 1024 * 1024);
+    }
 }
