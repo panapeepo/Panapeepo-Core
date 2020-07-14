@@ -9,6 +9,7 @@ import com.github.panapeepo.command.DiscordCommandSender;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import javax.annotation.Nonnull;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 @Command(
@@ -28,12 +29,33 @@ public class HelpCommand {
         var embed = new EmbedBuilder();
         var user = commandSender.getMember().getUser();
 
+        embed.setTitle("Help");
+        embed.setThumbnail(commandSender.getChannel().getJDA().getSelfUser().getAvatarUrl());
+        embed.setTimestamp(Instant.now());
+        embed.setDescription(
+                String.format("The current Command-Prefix for this Guild is `%s`.", this.panapeepo.getConfig().getCommandPrefix())
+        );
+
+        embed.setFooter(
+                String.format(
+                        "%s#%s • Panapeepo version %s (#%s)",
+                        user.getName(),
+                        user.getDiscriminator(),
+                        this.panapeepo.getCurrentVersion(),
+                        this.panapeepo.getCurrentCommit()
+                ),
+                commandSender.getMember().getUser().getAvatarUrl()
+        );
+
         panapeepo.getDiscordCommandMap().getCommands().forEach(usableCommand -> {
             var title = "`" + String.join("`, `", usableCommand.getAliases()) + "`";
-            embed.addField(title, usableCommand.getDescription() != null && !usableCommand.getDescription().isBlank() ? usableCommand.getDescription() : "Unknown", true);
+            embed.addField(
+                    title,
+                    usableCommand.getDescription() != null && !usableCommand.getDescription().isBlank() ?
+                            usableCommand.getDescription() : "-",
+                    true
+            );
         });
-
-        embed.setFooter(user.getName() + "#" + user.getDiscriminator(), commandSender.getMember().getUser().getAvatarUrl());
 
 
         commandSender.getChannel().sendMessage(embed.build()).queue(message -> {
