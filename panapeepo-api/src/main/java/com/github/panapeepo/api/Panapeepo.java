@@ -29,4 +29,10 @@ public interface Panapeepo {
 
     void shutdown();
 
+    @NotNull
+    String getCurrentVersion();
+
+    @NotNull
+    String getCurrentCommit();
+
 }

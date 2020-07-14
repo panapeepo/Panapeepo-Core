@@ -74,6 +74,9 @@ public class PanapeepoCore implements Panapeepo {
     }
 
     PanapeepoCore(@Nonnull PanapeepoConfig config, @Nonnull String[] args) throws LoginException, IOException {
+        System.out.println(
+                String.format("Starting Panapeepo version %s (%s)", this.getCurrentVersion(), this.getCurrentCommit())
+        );
         var pluginsPath = Paths.get("plugins");
         if (!Files.exists(pluginsPath)) {
             Files.createDirectory(pluginsPath);
@@ -159,5 +162,23 @@ public class PanapeepoCore implements Panapeepo {
     public void shutdown() {
         this.pluginManager.disablePlugins();
         System.exit(0);
+    }
+
+    @Override
+    public @NotNull String getCurrentCommit() {
+        var version = PanapeepoCore.class.getPackage().getSpecificationVersion();
+        if (version == null) {
+            return "unknown";
+        }
+        return version;
+    }
+
+    @Override
+    public @NotNull String getCurrentVersion() {
+        var version = PanapeepoCore.class.getPackage().getImplementationVersion();
+        if (version == null) {
+            return "unknown";
+        }
+        return version;
     }
 }
