@@ -1,18 +1,18 @@
 package com.github.panapeepo.command;
 
-import com.github.derrop.simplecommand.sender.CommandSender;
+import com.github.panapeepo.api.command.DiscordCommandSender;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
-public class DiscordCommandSender implements CommandSender {
+public class DefaultDiscordCommandSender implements DiscordCommandSender {
 
     private final MessageChannel channel;
     private final Member member;
 
-    public DiscordCommandSender(MessageChannel channel, Member member) {
+    public DefaultDiscordCommandSender(MessageChannel channel, Member member) {
         this.channel = channel;
         this.member = member;
     }

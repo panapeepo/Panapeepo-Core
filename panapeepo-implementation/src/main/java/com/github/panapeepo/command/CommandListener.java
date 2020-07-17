@@ -29,7 +29,7 @@ public class CommandListener extends ListenerAdapter {
         }
 
         String command = input.substring(prefix.length());
-        this.panapeepo.getDiscordCommandMap().dispatchCommand(command, new DiscordCommandSender(event.getChannel(), event.getMember()));
+        this.panapeepo.getDiscordCommandMap().dispatchCommand(command, new DefaultDiscordCommandSender(event.getChannel(), event.getMember()));
     }
 
 }
