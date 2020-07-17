@@ -27,4 +27,6 @@ public @interface Plugin {
 
     GatewayIntent[] intents() default {};
 
+    String dataFolder() default "plugins/%PLUGIN_ID%/";
+
 }

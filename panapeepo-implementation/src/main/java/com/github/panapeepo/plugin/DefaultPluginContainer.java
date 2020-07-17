@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.EnumSet;
 
@@ -17,12 +18,14 @@ public class DefaultPluginContainer implements PluginContainer {
     private final Object instance;
     private PluginState state = PluginState.LOADED;
     private final EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
+    private final Path dataFolder;
 
     public DefaultPluginContainer(URLClassLoader classLoader, Plugin plugin, Object instance, GatewayIntent[] intents) {
         this.classLoader = classLoader;
         this.plugin = plugin;
         this.instance = instance;
         this.intents.addAll(Arrays.asList(intents));
+        this.dataFolder = Path.of(plugin.dataFolder().replace("%PLUGIN_ID%", plugin.id()));
     }
 
     public void setState(PluginState state) {
@@ -54,4 +57,8 @@ public class DefaultPluginContainer implements PluginContainer {
         return this.intents;
     }
 
+    @Override
+    public Path getDataFolder() {
+        return this.dataFolder;
+    }
 }
