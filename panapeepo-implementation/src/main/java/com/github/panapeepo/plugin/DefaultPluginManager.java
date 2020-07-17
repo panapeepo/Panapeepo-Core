@@ -129,7 +129,7 @@ public class DefaultPluginManager implements PluginManager {
             });
         }
 
-        this.panapeepo.getEventManager().callEvent(new PluginStartedEvent(this.panapeepo), plugin.getInstance());
+        this.panapeepo.getEventManager().callEvent(new PluginStartedEvent(this.panapeepo, plugin), plugin.getInstance());
         plugin.setState(PluginState.ENABLED);
     }
 
@@ -137,7 +137,7 @@ public class DefaultPluginManager implements PluginManager {
     public void disablePlugins() {
         for (var plugin : this.plugins) {
 
-            this.panapeepo.getEventManager().callEvent(new PluginStoppedEvent(this.panapeepo), plugin.getInstance());
+            this.panapeepo.getEventManager().callEvent(new PluginStoppedEvent(this.panapeepo, plugin), plugin.getInstance());
             plugin.setState(PluginState.DISABLED);
 
             this.panapeepo.getEventManager().unregisterListeners(plugin.getClassLoader());
