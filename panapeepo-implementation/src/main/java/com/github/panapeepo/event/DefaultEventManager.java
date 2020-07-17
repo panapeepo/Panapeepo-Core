@@ -6,7 +6,6 @@ import com.github.panapeepo.api.event.ListenerContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,7 +20,7 @@ public class DefaultEventManager implements EventManager {
 
     @Override
     public <T> T callEvent(@NotNull T event, @Nullable Object listener) {
-        for (ListenerContainer listenerContainer : this.listenerContainers) {
+        for (var listenerContainer : this.listenerContainers) {
             if (listenerContainer.getTargetEventClass().equals(event.getClass())) {
                 if (listener == null || listener == listenerContainer.getListenerInstance()) {
                     listenerContainer.call(event);
@@ -34,9 +33,9 @@ public class DefaultEventManager implements EventManager {
 
     @Override
     public void registerListener(@NotNull Object listener) {
-        for (Method method : listener.getClass().getDeclaredMethods()) {
+        for (var method : listener.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(EventHandler.class)) {
-                Class<?>[] parameters = method.getParameterTypes();
+                var parameters = method.getParameterTypes();
                 if (parameters.length != 1) {
                     continue;
                 }

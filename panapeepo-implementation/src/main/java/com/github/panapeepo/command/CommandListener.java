@@ -19,8 +19,8 @@ public class CommandListener extends ListenerAdapter {
         if (event.getAuthor().isBot()) {
             return;
         }
-        String prefix = this.panapeepo.getConfig().getCommandPrefix();
-        String input = event.getMessage().getContentRaw();
+        var prefix = this.panapeepo.getConfig().getCommandPrefix();
+        var input = event.getMessage().getContentRaw();
         if (!this.panapeepo.getConfig().commandsCaseSensitive()) {
             input = input.toLowerCase();
         }
@@ -28,7 +28,7 @@ public class CommandListener extends ListenerAdapter {
             return;
         }
 
-        String command = input.substring(prefix.length());
+        var command = input.substring(prefix.length());
         this.panapeepo.getDiscordCommandMap().dispatchCommand(command, new DefaultDiscordCommandSender(event.getChannel(), event.getMember()));
     }
 

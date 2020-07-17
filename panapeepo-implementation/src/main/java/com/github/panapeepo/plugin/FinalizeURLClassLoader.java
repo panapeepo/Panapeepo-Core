@@ -32,7 +32,7 @@ public final class FinalizeURLClassLoader extends URLClassLoader {
         } catch (ClassNotFoundException ignored) {
         }
 
-        for (FinalizeURLClassLoader classLoader : CLASS_LOADERS) {
+        for (var classLoader : CLASS_LOADERS) {
             if (classLoader != this) {
                 try {
                     return classLoader.loadClass0(name, resolve);

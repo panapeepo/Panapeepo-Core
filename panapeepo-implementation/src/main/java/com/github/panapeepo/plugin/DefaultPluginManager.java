@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -36,17 +35,17 @@ public class DefaultPluginManager implements PluginManager {
 
     @Override
     public Plugin loadPlugin(@NotNull URL url) {
-        URLClassLoader classLoader = new FinalizeURLClassLoader(url);
+        var classLoader = new FinalizeURLClassLoader(url);
 
-        Class<?> mainClass = this.findMainClass(classLoader, url);
+        var mainClass = this.findMainClass(classLoader, url);
         if (mainClass == null) {
             return null;
         }
 
-        Plugin plugin = mainClass.getAnnotation(Plugin.class);
+        var plugin = mainClass.getAnnotation(Plugin.class);
 
         try {
-            Object instance = mainClass.getDeclaredConstructor(Panapeepo.class).newInstance(this.panapeepo);
+            var instance = mainClass.getDeclaredConstructor(Panapeepo.class).newInstance(this.panapeepo);
 
             this.panapeepo.getEventManager().registerListener(instance);
             this.plugins.add(new DefaultPluginContainer(classLoader, plugin, instance, plugin.intents()));
@@ -59,14 +58,14 @@ public class DefaultPluginManager implements PluginManager {
     }
 
     private Class<?> findMainClass(ClassLoader classLoader, URL url) {
-        try (ZipInputStream inputStream = new ZipInputStream(url.openStream())) {
+        try (var inputStream = new ZipInputStream(url.openStream())) {
             ZipEntry entry;
             while ((entry = inputStream.getNextEntry()) != null) {
                 if (!entry.getName().endsWith(".class")) {
                     continue;
                 }
 
-                String className = entry.getName().replace('/', '.');
+                var className = entry.getName().replace('/', '.');
                 className = className.substring(0, className.length() - ".class".length());
 
                 Class<?> mainClass;
@@ -110,7 +109,7 @@ public class DefaultPluginManager implements PluginManager {
 
     @Override
     public void enablePlugins() {
-        for (DefaultPluginContainer plugin : this.plugins) {
+        for (var plugin : this.plugins) {
             this.enablePlugin(plugin);
         }
     }
@@ -120,9 +119,9 @@ public class DefaultPluginManager implements PluginManager {
             return;
         }
 
-        PluginDependency[] dependencies = plugin.getPlugin().depends();
-        for (PluginDependency dependency : dependencies) {
-            Optional<DefaultPluginContainer> optional = this.getPlugin(dependency.id());
+        var dependencies = plugin.getPlugin().depends();
+        for (var dependency : dependencies) {
+            var optional = this.getPlugin(dependency.id());
             optional.ifPresentOrElse(this::enablePlugin, () -> {
                 if (!dependency.optional()) {
                     throw new PluginDependencyNotFoundException(plugin, dependency);
@@ -136,7 +135,7 @@ public class DefaultPluginManager implements PluginManager {
 
     @Override
     public void disablePlugins() {
-        for (DefaultPluginContainer plugin : this.plugins) {
+        for (var plugin : this.plugins) {
 
             this.panapeepo.getEventManager().callEvent(new PluginStoppedEvent(this.panapeepo), plugin.getInstance());
             plugin.setState(PluginState.DISABLED);

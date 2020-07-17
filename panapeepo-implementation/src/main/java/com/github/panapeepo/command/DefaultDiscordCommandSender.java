@@ -38,11 +38,11 @@ public class DefaultDiscordCommandSender implements DiscordCommandSender {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        String currentMessage = message;
+        var currentMessage = message;
         while (currentMessage.length() > 2000) {
             boolean done = false;
 
-            for (int i = 2000; i >= 0; i--) {
+            for (var i = 2000; i >= 0; i--) {
                 if (currentMessage.charAt(i) == '\n') {
                     this.sendRawMessage(currentMessage.substring(0, i));
                     currentMessage = currentMessage.substring(i);
