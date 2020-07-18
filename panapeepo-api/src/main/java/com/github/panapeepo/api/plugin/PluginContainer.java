@@ -24,4 +24,10 @@ public interface PluginContainer {
     EnumSet<GatewayIntent> getIntents();
 
     Path getDataFolder();
+
+    <T> T getConfig(Class<? extends T> clazz);
+
+    void saveConfig();
+
+    <T> void reloadConfig(Class<? extends T> clazz);
 }
