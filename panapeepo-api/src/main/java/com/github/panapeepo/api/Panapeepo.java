@@ -2,8 +2,10 @@ package com.github.panapeepo.api;
 
 import com.github.derrop.simplecommand.map.CommandMap;
 import com.github.panapeepo.api.config.PanapeepoConfig;
+import com.github.panapeepo.api.database.DatabaseDriver;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.plugin.PluginManager;
+import com.github.panapeepo.api.service.ServiceRegistry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -32,6 +34,10 @@ public interface Panapeepo {
     @NotNull
     PanapeepoConfig getConfig();
 
+    @NotNull DatabaseDriver getDatabase();
+
+    @NotNull ServiceRegistry getServiceRegistry();
+
     void shutdown();
 
     @NotNull
@@ -55,5 +61,4 @@ public interface Panapeepo {
     String formatMillis(long millis);
 
     void sendDefaultEmbed(@NotNull MessageChannel channel, @NotNull User user, @NotNull Consumer<EmbedBuilder> consumer);
-
 }

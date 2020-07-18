@@ -6,16 +6,20 @@ import com.github.derrop.simplecommand.map.DefaultCommandMap;
 import com.github.panapeepo.api.Panapeepo;
 import com.github.panapeepo.api.config.ActivityConfig;
 import com.github.panapeepo.api.config.PanapeepoConfig;
+import com.github.panapeepo.api.database.DatabaseDriver;
 import com.github.panapeepo.api.event.EventManager;
 import com.github.panapeepo.api.plugin.PluginManager;
+import com.github.panapeepo.api.service.ServiceRegistry;
 import com.github.panapeepo.api.util.MessageUtils;
 import com.github.panapeepo.command.CommandListener;
 import com.github.panapeepo.command.discord.HelpCommand;
 import com.github.panapeepo.command.discord.InfoCommand;
 import com.github.panapeepo.command.discord.PluginsCommand;
 import com.github.panapeepo.config.DefaultPanapeepoConfig;
+import com.github.panapeepo.database.H2DatabaseDriver;
 import com.github.panapeepo.event.DefaultEventManager;
 import com.github.panapeepo.plugin.DefaultPluginManager;
+import com.github.panapeepo.service.BasicServiceRegistry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -54,6 +58,7 @@ public class PanapeepoCore implements Panapeepo {
     private final CommandMap consoleCommandMap = new DefaultCommandMap();
     private final CommandMap discordCommandMap = new DefaultCommandMap();
 
+    private final ServiceRegistry serviceRegistry = new BasicServiceRegistry();
     private final PanapeepoConfig config;
 
     public static void main(String[] args) throws IOException {
@@ -87,10 +92,10 @@ public class PanapeepoCore implements Panapeepo {
         if (!Files.exists(pluginsPath)) {
             Files.createDirectory(pluginsPath);
         }
+
         this.config = config;
-
+        this.serviceRegistry.setProvider(DatabaseDriver.class, new H2DatabaseDriver(), false, true);
         this.consoleCommandMap.registerDefaultHelpCommand();
-
         this.pluginManager.loadPlugins(pluginsPath);
 
         var intents = new ArrayList<>(Arrays.asList(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS));
@@ -117,9 +122,10 @@ public class PanapeepoCore implements Panapeepo {
         this.startRPCTimer(config.getActivities());
 
         this.pluginManager.enablePlugins();
+        this.serviceRegistry.getProviderUnchecked(DatabaseDriver.class).connect();
         System.out.println(String.format(
                 "Started Panapeepo (Took %.2fs)! Enabled %s plugin(s) and started %s shard(s)",
-                ((double) System.currentTimeMillis() - (double) this.startupTime) / (double) 1000,
+                (System.currentTimeMillis() - this.startupTime) / 1000D,
                 this.pluginManager.getPlugins().size(),
                 this.shardManager.getShardsTotal()
         ));
@@ -170,6 +176,16 @@ public class PanapeepoCore implements Panapeepo {
     @Override
     public @NotNull PanapeepoConfig getConfig() {
         return this.config;
+    }
+
+    @Override
+    public @NotNull DatabaseDriver getDatabase() {
+        return this.serviceRegistry.getProviderUnchecked(DatabaseDriver.class);
+    }
+
+    @Override
+    public @NotNull ServiceRegistry getServiceRegistry() {
+        return this.serviceRegistry;
     }
 
     @Override
