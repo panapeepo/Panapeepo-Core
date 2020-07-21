@@ -74,7 +74,7 @@ public class H2DatabaseTable<T> implements DatabaseTable<T> {
     @Override
     public CompletableFuture<Boolean> contains(String key) {
         return CompletableFuture.supplyAsync(
-                () -> this.driver.executeQuery("SELECT `key` FROM " + this.name + " WHERE `key` = ?", ResultSet::next, false),
+                () -> this.driver.executeQuery("SELECT `key` FROM " + this.name + " WHERE `key` = ?", ResultSet::next, false, key),
                 this.pool
         );
     }
