@@ -28,7 +28,8 @@
 
     <scm>
         <connection>scm:git:git://github.com/panapeepo/Panapeepo-Core.git</connection>
-        <developerConnection>scm:git:ssh://github.com/panapeepo/Panapeepo-Core.git</developerConnection>
+        <developerConnection>scm:git:ssh://github.com/panapeepo/Panapeepo-Core.git
+        </developerConnection>
         <url>https://github.com/panapeepo/Panapeepo-Core</url>
     </scm>
 
@@ -106,6 +107,20 @@
                         <phase>validate</phase>
                         <goals>
                             <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
                         </goals>
                     </execution>
                 </executions>
