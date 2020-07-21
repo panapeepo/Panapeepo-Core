@@ -21,11 +21,7 @@ public class DefaultPanapeepoGuildProvider implements PanapeepoGuildProvider {
             expireAfterWrite(30, TimeUnit.MINUTES).build(new CacheLoader<>() {
         @Override
         public PanapeepoGuild load(@NotNull Long key) throws Exception {
-            var result = databaseTable.getObject(key.toString()).get();
-            if (result == null) {
-                throw new Exception();
-            }
-            return result;
+            return databaseTable.getObject(key.toString()).get();
         }
     });
 

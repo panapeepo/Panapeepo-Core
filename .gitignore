@@ -80,3 +80,4 @@ nb-configuration.xml
 ##############################
 config.json
 plugins/
+database/

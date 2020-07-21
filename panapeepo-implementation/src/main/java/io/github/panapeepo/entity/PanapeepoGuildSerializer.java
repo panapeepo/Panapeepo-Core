@@ -20,10 +20,7 @@ public class PanapeepoGuildSerializer implements ByteToObjectDeserializer<Panape
 
     @Override
     public Optional<PanapeepoGuild> deserialize(ThreadSaveGrowingByteBuffer buffer) {
-        var guild = new DefaultPanapeepoGuild();
-        guild.id = buffer.readLong();
-        guild.prefix = buffer.readString();
-        return Optional.of(guild);
+        return Optional.of(new DefaultPanapeepoGuild(buffer.readLong(), buffer.readString()));
     }
 
 }
