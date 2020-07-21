@@ -10,6 +10,15 @@ public class DefaultPanapeepoGuild implements PanapeepoGuild {
     protected long id;
     protected String prefix;
 
+    public DefaultPanapeepoGuild(long id, String prefix) {
+        this.id = id;
+        this.prefix = prefix;
+    }
+
+    public DefaultPanapeepoGuild() {
+
+    }
+
     @Override
     public long getId() {
         return this.id;

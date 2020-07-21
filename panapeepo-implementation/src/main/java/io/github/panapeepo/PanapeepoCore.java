@@ -9,6 +9,7 @@ import io.github.panapeepo.api.config.PanapeepoConfig;
 import io.github.panapeepo.api.database.DatabaseDriver;
 import io.github.panapeepo.api.event.EventManager;
 import io.github.panapeepo.api.plugin.PluginManager;
+import io.github.panapeepo.api.provider.PanapeepoGuildProvider;
 import io.github.panapeepo.api.service.ServiceRegistry;
 import io.github.panapeepo.api.util.MessageUtils;
 import io.github.panapeepo.command.CommandListener;
@@ -19,6 +20,7 @@ import io.github.panapeepo.config.DefaultPanapeepoConfig;
 import io.github.panapeepo.database.H2DatabaseDriver;
 import io.github.panapeepo.event.DefaultEventManager;
 import io.github.panapeepo.plugin.DefaultPluginManager;
+import io.github.panapeepo.provider.DefaultPanapeepoGuildProvider;
 import io.github.panapeepo.service.BasicServiceRegistry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -95,6 +97,7 @@ public class PanapeepoCore implements Panapeepo {
 
         this.config = config;
         this.serviceRegistry.setProvider(DatabaseDriver.class, new H2DatabaseDriver(), false, true);
+
         this.consoleCommandMap.registerDefaultHelpCommand();
         this.pluginManager.loadPlugins(pluginsPath);
 
@@ -123,6 +126,9 @@ public class PanapeepoCore implements Panapeepo {
 
         this.pluginManager.enablePlugins();
         this.serviceRegistry.getProviderUnchecked(DatabaseDriver.class).connect();
+
+        this.serviceRegistry.setProvider(PanapeepoGuildProvider.class, new DefaultPanapeepoGuildProvider(this));
+
         System.out.println(String.format(
                 "Started Panapeepo (Took %.2fs)! Enabled %s plugin(s) and started %s shard(s)",
                 (System.currentTimeMillis() - this.startupTime) / 1000D,

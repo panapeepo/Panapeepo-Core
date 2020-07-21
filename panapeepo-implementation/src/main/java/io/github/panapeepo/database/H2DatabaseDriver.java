@@ -29,7 +29,7 @@ import io.github.panapeepo.api.database.serializer.ByteToObjectDeserializer;
 import io.github.panapeepo.api.database.serializer.ObjectToByteSerializer;
 import io.github.panapeepo.database.util.SQLFunction;
 import org.h2.Driver;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.sql.*;
@@ -88,7 +88,7 @@ public class H2DatabaseDriver implements DatabaseDriver {
         }
     }
 
-    @NotNull
+    @Nullable
     public <T> T executeQuery(String query, SQLFunction<ResultSet, T> function, T defaultValue, Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
             int i = 1;
