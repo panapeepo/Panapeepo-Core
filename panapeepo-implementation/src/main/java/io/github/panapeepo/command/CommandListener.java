@@ -27,16 +27,20 @@ public class CommandListener extends ListenerAdapter {
         }).orElse(this.panapeepo.getConfig().getCommandPrefix());
 
         var input = event.getMessage().getContentRaw();
-        if (!this.panapeepo.getConfig().commandsCaseSensitive()) {
-            input = input.toLowerCase();
-        }
 
-        if (!input.startsWith(prefix)) {
+        if (!startsWith(input, prefix, !this.panapeepo.getConfig().commandsCaseSensitive())) {
             return;
         }
 
         var command = input.substring(prefix.length());
         this.panapeepo.getDiscordCommandMap().dispatchCommand(command, new DefaultDiscordCommandSender(event.getChannel(), event.getMember()));
+    }
+
+    private boolean startsWith(String input, String prefix, boolean ignoreCase) {
+        if (ignoreCase) {
+            return input.toLowerCase().startsWith(prefix);
+        }
+        return input.startsWith(prefix);
     }
 
 }
