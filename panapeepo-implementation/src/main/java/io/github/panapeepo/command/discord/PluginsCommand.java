@@ -27,10 +27,30 @@ public class PluginsCommand {
 
             panapeepo.getPluginManager().getPlugins().forEach(pluginContainer -> {
                 var plugin = pluginContainer.getPlugin();
-                var title = "[" + plugin.displayName() + "](" + plugin.website() + ")";
+                String title;
+                if (plugin.website().isBlank()) {
+                    title = plugin.displayName();
+                } else {
+                    title = String.format("[%s](%s)", plugin.displayName(), plugin.website());
+                }
+
+                var description = new StringBuilder("Version: " + plugin.version() + ".");
+                if (plugin.authors().length > 0) {
+                    description.append(" Author");
+                    if (plugin.authors().length != 1) {
+                        description.append("s");
+                    }
+                    description.append(": ").append(String.join(", ", plugin.authors()));
+                    description.append(".");
+                }
+                if (!plugin.description().isBlank()) {
+                    description.append(" ");
+                    description.append(plugin.description());
+                }
+
                 embed.addField(
                         title,
-                        String.format("Version: %s. Authors: %s", plugin.version(), String.join(", ", plugin.authors())),
+                        description.toString(),
                         true
                 );
             });
