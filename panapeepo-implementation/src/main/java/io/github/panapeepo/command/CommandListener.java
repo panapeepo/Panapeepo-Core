@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class CommandListener extends ListenerAdapter {
 
@@ -22,23 +21,21 @@ public class CommandListener extends ListenerAdapter {
             return;
         }
 
-        AtomicReference<String> prefix = new AtomicReference<>(this.panapeepo.getConfig().getCommandPrefix());
-        this.panapeepo.getServiceRegistry().getProvider(PanapeepoGuildProvider.class).ifPresent(panapeepoGuildProvider -> {
-            var guild = panapeepoGuildProvider.getGuild(event.getGuild().getIdLong());
-            if (guild != null) {
-                prefix.set(guild.getPrefix());
-            }
-        });
+        var prefix = this.panapeepo.getServiceRegistry().getProvider(PanapeepoGuildProvider.class).map(guildProvider -> {
+            var guild = guildProvider.getGuild(event.getGuild().getIdLong());
+            return guild == null ? null : guild.getPrefix();
+        }).orElse(this.panapeepo.getConfig().getCommandPrefix());
 
         var input = event.getMessage().getContentRaw();
         if (!this.panapeepo.getConfig().commandsCaseSensitive()) {
             input = input.toLowerCase();
         }
-        if (!input.startsWith(prefix.get())) {
+
+        if (!input.startsWith(prefix)) {
             return;
         }
 
-        var command = input.substring(prefix.get().length());
+        var command = input.substring(prefix.length());
         this.panapeepo.getDiscordCommandMap().dispatchCommand(command, new DefaultDiscordCommandSender(event.getChannel(), event.getMember()));
     }
 
