@@ -10,6 +10,7 @@ import io.github.panapeepo.api.database.DatabaseDriver;
 import io.github.panapeepo.api.event.EventManager;
 import io.github.panapeepo.api.plugin.PluginManager;
 import io.github.panapeepo.api.provider.PanapeepoGuildProvider;
+import io.github.panapeepo.api.provider.PanapeepoUserProvider;
 import io.github.panapeepo.api.service.ServiceRegistry;
 import io.github.panapeepo.api.util.MessageUtils;
 import io.github.panapeepo.command.CommandListener;
@@ -22,6 +23,7 @@ import io.github.panapeepo.database.H2DatabaseDriver;
 import io.github.panapeepo.event.DefaultEventManager;
 import io.github.panapeepo.plugin.DefaultPluginManager;
 import io.github.panapeepo.provider.DefaultPanapeepoGuildProvider;
+import io.github.panapeepo.provider.DefaultPanapeepoUserProvider;
 import io.github.panapeepo.service.BasicServiceRegistry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -130,6 +132,7 @@ public class PanapeepoCore implements Panapeepo {
         this.serviceRegistry.getProviderUnchecked(DatabaseDriver.class).connect();
 
         this.serviceRegistry.setProvider(PanapeepoGuildProvider.class, new DefaultPanapeepoGuildProvider(this));
+        this.serviceRegistry.setProvider(PanapeepoUserProvider.class, new DefaultPanapeepoUserProvider(this));
 
         System.out.println(String.format(
                 "Started Panapeepo (Took %.2fs)! Enabled %s plugin(s) and started %s shard(s)",
