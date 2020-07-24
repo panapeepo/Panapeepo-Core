@@ -78,6 +78,6 @@ nb-configuration.xml
 ##############################
 ## Panapeepo
 ##############################
-config.json
-plugins/
-database/
+/config.json
+/plugins/
+/database/
