@@ -24,8 +24,12 @@
 package io.github.panapeepo.api.database.insert;
 
 import io.github.panapeepo.api.database.update.UpdateOperationBuilder;
+import org.jetbrains.annotations.NotNull;
 
 public interface InsertOperationBuilder<T> extends UpdateOperationBuilder<T> {
+
+    @Override
+    @NotNull InsertOperationBuilder<T> set(@NotNull String field, @NotNull Object value);
 
     int getRequiredArgumentLength();
 }

@@ -26,7 +26,7 @@ package io.github.panapeepo.database.insert;
 import com.google.common.base.Preconditions;
 import io.github.panapeepo.api.database.Table;
 import io.github.panapeepo.api.database.insert.InsertOperationBuilder;
-import io.github.panapeepo.api.database.update.UpdateOperationBuilder;
+import io.github.panapeepo.api.database.query.QueryOperation;
 import io.github.panapeepo.database.H2DatabaseDriver;
 import io.github.panapeepo.database.request.SQLRequestBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -44,12 +44,30 @@ public class SQLInsertOperationBuilder<T> extends SQLRequestBuilder<T> implement
     private int givenArguments;
 
     @Override
+    public @NotNull InsertOperationBuilder<T> where(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.where(field, operation, value);
+        return this;
+    }
+
+    @Override
+    public @NotNull InsertOperationBuilder<T> and(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.and(field, operation, value);
+        return this;
+    }
+
+    @Override
+    public @NotNull InsertOperationBuilder<T> or(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.or(field, operation, value);
+        return this;
+    }
+
+    @Override
     public int getRequiredArgumentLength() {
         return this.schemeLength;
     }
 
     @Override
-    public @NotNull UpdateOperationBuilder<T> set(@NotNull String field, @NotNull Object value) {
+    public @NotNull InsertOperationBuilder<T> set(@NotNull String field, @NotNull Object value) {
         Preconditions.checkArgument(this.schemeLength < this.givenArguments++);
         if (this.givenArguments == 1) {
             this.requestStringBuilder.append("(").append(field);

@@ -2,9 +2,10 @@ package io.github.panapeepo.database.query;
 
 import com.google.common.collect.Lists;
 import io.github.panapeepo.api.database.Table;
+import io.github.panapeepo.api.database.buffer.ThreadSaveGrowingByteBuffer;
+import io.github.panapeepo.api.database.query.QueryOperation;
 import io.github.panapeepo.api.database.query.QueryOperationBuilder;
 import io.github.panapeepo.api.database.query.SortOperation;
-import io.github.panapeepo.api.database.buffer.ThreadSaveGrowingByteBuffer;
 import io.github.panapeepo.database.H2DatabaseDriver;
 import io.github.panapeepo.database.request.SQLRequestBuilder;
 import io.netty.buffer.Unpooled;
@@ -22,8 +23,26 @@ public class SQLQueryOperationBuilder<T> extends SQLRequestBuilder<T> implements
     private int limit = -1;
 
     public SQLQueryOperationBuilder(@NotNull H2DatabaseDriver driver, @NotNull Table<T> table) {
-        super(table);
+        super(new StringBuilder("SELECT * FROM " + table.getName() + " "), table, driver);
         this.driver = driver;
+    }
+
+    @Override
+    public @NotNull QueryOperationBuilder<T> where(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.where(field, operation, value);
+        return this;
+    }
+
+    @Override
+    public @NotNull QueryOperationBuilder<T> and(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.and(field, operation, value);
+        return this;
+    }
+
+    @Override
+    public @NotNull QueryOperationBuilder<T> or(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.or(field, operation, value);
+        return this;
     }
 
     @Override

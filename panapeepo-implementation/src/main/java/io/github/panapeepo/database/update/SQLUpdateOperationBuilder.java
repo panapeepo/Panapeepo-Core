@@ -24,6 +24,7 @@
 package io.github.panapeepo.database.update;
 
 import io.github.panapeepo.api.database.Table;
+import io.github.panapeepo.api.database.query.QueryOperation;
 import io.github.panapeepo.api.database.update.UpdateOperation;
 import io.github.panapeepo.api.database.update.UpdateOperationBuilder;
 import io.github.panapeepo.database.H2DatabaseDriver;
@@ -36,6 +37,24 @@ public class SQLUpdateOperationBuilder<T> extends SQLRequestBuilder<T> implement
 
     public SQLUpdateOperationBuilder(@NotNull Table<T> table, @NotNull H2DatabaseDriver databaseDriver, @NotNull UpdateOperation operation) {
         super(new StringBuilder(operation.name() + " FROM " + table.getName() + " "), table, databaseDriver);
+    }
+
+    @Override
+    public @NotNull UpdateOperationBuilder<T> where(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.where(field, operation, value);
+        return this;
+    }
+
+    @Override
+    public @NotNull UpdateOperationBuilder<T> and(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.and(field, operation, value);
+        return this;
+    }
+
+    @Override
+    public @NotNull UpdateOperationBuilder<T> or(@NotNull String field, @NotNull QueryOperation operation, @NotNull Object value) {
+        super.or(field, operation, value);
+        return this;
     }
 
     @Override
