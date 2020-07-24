@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import io.github.panapeepo.api.Panapeepo;
 import io.github.panapeepo.api.database.DatabaseTable;
+import io.github.panapeepo.api.database.Table;
 import io.github.panapeepo.api.entity.PanapeepoGuild;
 import io.github.panapeepo.api.provider.PanapeepoGuildProvider;
 import io.github.panapeepo.entity.PanapeepoGuildSerializer;
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultPanapeepoGuildProvider implements PanapeepoGuildProvider {
 
-    private final DatabaseTable<PanapeepoGuild> databaseTable;
+    private final Table<PanapeepoGuild> databaseTable;
 
     private final LoadingCache<Long, PanapeepoGuild> cache = CacheBuilder.newBuilder().
             expireAfterWrite(30, TimeUnit.MINUTES).build(new CacheLoader<>() {

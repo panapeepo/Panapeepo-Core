@@ -1,4 +1,6 @@
-package io.github.panapeepo.api.database.adb;
+package io.github.panapeepo.api.database.query;
+
+import org.jetbrains.annotations.NotNull;
 
 public enum QueryOperation {
 
@@ -15,7 +17,7 @@ public enum QueryOperation {
         this.operation = operation;
     }
 
-    public String getOperation() {
+    public @NotNull String getFormatted() {
         return operation;
     }
 }

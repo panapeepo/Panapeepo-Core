@@ -21,26 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.panapeepo.api.database;
+package io.github.panapeepo.database.update;
 
-import java.util.Collection;
+import io.github.panapeepo.api.database.Table;
+import io.github.panapeepo.api.database.update.UpdateOperation;
+import io.github.panapeepo.api.database.update.UpdateOperationBuilder;
+import io.github.panapeepo.database.H2DatabaseDriver;
+import io.github.panapeepo.database.request.SQLRequestBuilder;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.CompletableFuture;
 
-public interface DatabaseTable<T> {
+public class SQLUpdateOperationBuilder<T> extends SQLRequestBuilder<T> implements UpdateOperationBuilder<T> {
 
-    CompletableFuture<Void> insertObject(String key, T t);
+    public SQLUpdateOperationBuilder(@NotNull Table<T> table, @NotNull H2DatabaseDriver databaseDriver, @NotNull UpdateOperation operation) {
+        super(new StringBuilder(operation.name() + " FROM " + table.getName() + " "), table, databaseDriver);
+    }
 
-    CompletableFuture<Void> removeObject(String key);
+    @Override
+    public @NotNull UpdateOperationBuilder<T> set(@NotNull String field, @NotNull Object value) {
+        this.requestStringBuilder.append("SET ").append(field).append(" = ? ");
+        this.objects.add(value);
+        return this;
+    }
 
-    CompletableFuture<Boolean> contains(String key);
-
-    CompletableFuture<T> getObject(String key);
-
-    CompletableFuture<Collection<T>> getAllEntries();
-
-    CompletableFuture<Long> getSize();
-
-    CompletableFuture<Void> clear();
-
-    CompletableFuture<Void> delete();
+    @Override
+    public @NotNull CompletableFuture<Integer> execute() {
+        return CompletableFuture.supplyAsync(() -> this.driver.executeUpdate(this.build(), this.objects));
+    }
 }

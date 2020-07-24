@@ -21,19 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.panapeepo.api.database;
+package io.github.panapeepo.api.database.insert;
 
-import io.github.panapeepo.api.database.serializer.ByteToObjectDeserializer;
-import io.github.panapeepo.api.database.serializer.ObjectToByteSerializer;
-import org.jetbrains.annotations.NotNull;
+import io.github.panapeepo.api.database.update.UpdateOperationBuilder;
 
-import java.util.Collection;
+public interface InsertOperationBuilder<T> extends UpdateOperationBuilder<T> {
 
-public interface DatabaseDriver {
-
-    void connect();
-
-    @NotNull Collection<String> getTableNames();
-
-    @NotNull <T> Table<T> getTable(@NotNull String name, @NotNull String scheme, @NotNull ObjectToByteSerializer<T> serializer, @NotNull ByteToObjectDeserializer<T> deserializer);
+    int getRequiredArgumentLength();
 }
