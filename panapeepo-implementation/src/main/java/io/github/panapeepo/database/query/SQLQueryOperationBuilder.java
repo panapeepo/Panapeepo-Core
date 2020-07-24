@@ -104,12 +104,12 @@ public class SQLQueryOperationBuilder<T> extends SQLRequestBuilder<T> implements
 
     @Override
     public @NotNull String build() {
-        if (this.limit != -1) {
-            this.requestStringBuilder.append(" LIMIT ").append(this.limit);
+        if (this.limit > 0) {
+            this.requestStringBuilder.append("LIMIT ").append(this.limit).append(" ");
         }
 
-        if (this.offset != -1) {
-            this.requestStringBuilder.append(" OFFSET ").append(this.offset);
+        if (this.offset > 0) {
+            this.requestStringBuilder.append("OFFSET ").append(this.offset).append(" ");
         }
 
         return super.build();

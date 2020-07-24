@@ -52,10 +52,10 @@ public class SQLRequestBuilder<T> implements RequestBuilder<T> {
         if (this.append.getAndSet(true)) {
             this.requestStringBuilder.append(",");
         } else {
-            this.requestStringBuilder.append(" WHERE ");
+            this.requestStringBuilder.append("WHERE ");
         }
 
-        this.requestStringBuilder.append(field).append(" ").append(operation.getFormatted()).append(" ? ");
+        this.requestStringBuilder.append("`").append(field).append("` ").append(operation.getFormatted()).append(" ? ");
         this.objects.add(value);
         return this;
     }
