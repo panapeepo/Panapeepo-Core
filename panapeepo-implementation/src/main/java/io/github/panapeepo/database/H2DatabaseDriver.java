@@ -29,9 +29,11 @@ import io.github.panapeepo.api.database.serializer.ByteToObjectDeserializer;
 import io.github.panapeepo.api.database.serializer.ObjectToByteSerializer;
 import io.github.panapeepo.database.util.SQLFunction;
 import org.h2.Driver;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,15 +75,7 @@ public class H2DatabaseDriver implements DatabaseDriver {
 
     public int executeUpdate(String query, Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
-            int i = 1;
-            for (Object object : objects) {
-                if (object instanceof byte[]) {
-                    preparedStatement.setBytes(i++, (byte[]) object);
-                } else {
-                    preparedStatement.setString(i++, object.toString());
-                }
-            }
-
+            this.applyParameters(preparedStatement, objects);
             return preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -91,14 +85,7 @@ public class H2DatabaseDriver implements DatabaseDriver {
 
     public <T> T executeQuery(String query, SQLFunction<ResultSet, T> function, T defaultValue, Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
-            int i = 1;
-            for (Object object : objects) {
-                if (object instanceof byte[]) {
-                    preparedStatement.setBytes(i++, (byte[]) object);
-                } else {
-                    preparedStatement.setString(i++, object.toString());
-                }
-            }
+            this.applyParameters(preparedStatement, objects);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return function.apply(resultSet);
@@ -110,5 +97,40 @@ public class H2DatabaseDriver implements DatabaseDriver {
         }
 
         return defaultValue;
+    }
+
+    private void applyParameters(@NotNull PreparedStatement preparedStatement, @NonNls Object... objects) throws SQLException {
+        int i = 1;
+        for (Object object : objects) {
+            if (object instanceof byte[]) {
+                preparedStatement.setBytes(i++, (byte[]) object);
+            } else if (object instanceof Short) { // short before int
+                preparedStatement.setShort(i++, (short) object);
+            } else if (object instanceof Integer) { // int before long
+                preparedStatement.setInt(i++, (int) object);
+            } else if (object instanceof Long) {
+                preparedStatement.setLong(i++, (long) object);
+            } else if (object instanceof Double) { // double before float
+                preparedStatement.setDouble(i++, (double) object);
+            } else if (object instanceof Float) {
+                preparedStatement.setFloat(i++, (float) object);
+            } else if (object instanceof Byte) {
+                preparedStatement.setByte(i++, (byte) object);
+            } else if (object instanceof Boolean) {
+                preparedStatement.setBoolean(i++, (boolean) object);
+            } else if (object instanceof BigDecimal) {
+                preparedStatement.setBigDecimal(i++, (BigDecimal) object);
+            } else if (object instanceof Date) {
+                preparedStatement.setDate(i++, (Date) object);
+            } else if (object instanceof Timestamp) {
+                preparedStatement.setTimestamp(i++, (Timestamp) object);
+            } else if (object instanceof Time) {
+                preparedStatement.setTime(i++, (Time) object);
+            } else if (object instanceof String) {
+                preparedStatement.setString(i++, (String) object);
+            } else {
+                throw new IllegalStateException("Unable to set object " + object.getClass().getName());
+            }
+        }
     }
 }
