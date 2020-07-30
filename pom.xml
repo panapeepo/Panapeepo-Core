@@ -17,6 +17,7 @@
     <modules>
         <module>panapeepo-api</module>
         <module>panapeepo-implementation</module>
+        <module>panapeepo-launcher</module>
     </modules>
 
     <licenses>
