@@ -21,26 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.panapeepo.api.database;
+package io.github.panapeepo.api.database.insert;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import io.github.panapeepo.api.database.update.UpdateOperationBuilder;
+import org.jetbrains.annotations.NotNull;
 
-public interface DatabaseTable<T> {
+public interface InsertOperationBuilder<T> extends UpdateOperationBuilder<T> {
 
-    CompletableFuture<Void> insertObject(String key, T t);
+    @Override
+    @NotNull InsertOperationBuilder<T> set(@NotNull String field, @NotNull Object value);
 
-    CompletableFuture<Void> removeObject(String key);
-
-    CompletableFuture<Boolean> contains(String key);
-
-    CompletableFuture<T> getObject(String key);
-
-    CompletableFuture<Collection<T>> getAllEntries();
-
-    CompletableFuture<Long> getSize();
-
-    CompletableFuture<Void> clear();
-
-    CompletableFuture<Void> delete();
+    int getRequiredArgumentLength();
 }

@@ -23,103 +23,65 @@
  */
 package io.github.panapeepo.database;
 
-import io.github.panapeepo.api.database.DatabaseTable;
-import io.github.panapeepo.api.database.buffer.ThreadSaveGrowingByteBuffer;
+import io.github.panapeepo.api.database.Table;
+import io.github.panapeepo.api.database.insert.InsertOperationBuilder;
+import io.github.panapeepo.api.database.query.QueryOperationBuilder;
+import io.github.panapeepo.api.database.update.UpdateOperation;
+import io.github.panapeepo.api.database.update.UpdateOperationBuilder;
 import io.github.panapeepo.api.database.serializer.ByteToObjectDeserializer;
 import io.github.panapeepo.api.database.serializer.ObjectToByteSerializer;
-import io.netty.buffer.Unpooled;
+import io.github.panapeepo.database.insert.SQLInsertOperationBuilder;
+import io.github.panapeepo.database.query.SQLQueryOperationBuilder;
+import io.github.panapeepo.database.update.SQLUpdateOperationBuilder;
+import org.jetbrains.annotations.NotNull;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
-public class H2DatabaseTable<T> implements DatabaseTable<T> {
+public class H2DatabaseTable<T> implements Table<T> {
 
-    H2DatabaseTable(H2DatabaseDriver driver, String name, ObjectToByteSerializer<T> serializer, ByteToObjectDeserializer<T> deserializer) {
+    H2DatabaseTable(H2DatabaseDriver driver, String name, String scheme, ObjectToByteSerializer<T> serializer, ByteToObjectDeserializer<T> deserializer) {
         this.driver = driver;
         this.name = name;
         this.serializer = serializer;
         this.deserializer = deserializer;
+        this.schemeLength = scheme.contains(",") ? scheme.split(",").length : 1;
 
-        this.driver.executeUpdate("CREATE TABLE IF NOT EXISTS `" + name + "` (`key` TEXT, `data` LONGBLOB);");
+        this.driver.executeUpdate("CREATE TABLE IF NOT EXISTS `" + name + "` " + scheme + ";");
     }
 
     private final H2DatabaseDriver driver;
     private final String name;
+    private final int schemeLength;
     private final ObjectToByteSerializer<T> serializer;
     private final ByteToObjectDeserializer<T> deserializer;
 
-    private final Executor pool = Executors.newCachedThreadPool();
-
     @Override
-    public CompletableFuture<Void> insertObject(String key, T t) {
-        return this.contains(key).thenAcceptAsync(result -> {
-            byte[] blob = this.serializer.serialize(t);
-            if (result) {
-                this.driver.executeUpdate("UPDATE `" + this.name + "` SET `data` = ? WHERE `key` = ?", blob, key);
-            } else {
-                this.driver.executeUpdate("INSERT INTO `" + this.name + "` (`key`, `data`) VALUES (?, ?);", key, blob);
-            }
-        }, this.pool);
+    public @NotNull ObjectToByteSerializer<T> getSerializer() {
+        return this.serializer;
     }
 
     @Override
-    public CompletableFuture<Void> removeObject(String key) {
-        return CompletableFuture.runAsync(() -> this.driver.executeUpdate("DELETE FROM `" + this.name + "` WHERE `key` = ?", key));
+    public @NotNull ByteToObjectDeserializer<T> getDeserializer() {
+        return this.deserializer;
     }
 
     @Override
-    public CompletableFuture<Boolean> contains(String key) {
-        return CompletableFuture.supplyAsync(
-                () -> this.driver.executeQuery("SELECT `key` FROM " + this.name + " WHERE `key` = ?", ResultSet::next, false, key),
-                this.pool
-        );
+    public @NotNull InsertOperationBuilder<T> insert() {
+        return new SQLInsertOperationBuilder<>(this, this.driver, this.schemeLength);
     }
 
     @Override
-    public CompletableFuture<T> getObject(String key) {
-        return CompletableFuture.supplyAsync(() -> this.driver.executeQuery(
-                "SELECT `data` FROM `" + this.name + "` WHERE `key` = ?",
-                resultSet -> {
-                    if (!resultSet.next()) {
-                        return null;
-                    }
-
-                    byte[] blob = resultSet.getBytes("data");
-                    if (blob == null) {
-                        return null;
-                    }
-
-                    return this.deserializer.deserialize(new ThreadSaveGrowingByteBuffer(Unpooled.wrappedBuffer(blob))).orElse(null);
-                }, null, key
-        ), this.pool);
+    public @NotNull QueryOperationBuilder<T> select() {
+        return new SQLQueryOperationBuilder<>(this.driver, this);
     }
 
     @Override
-    public CompletableFuture<Collection<T>> getAllEntries() {
-        return CompletableFuture.supplyAsync(() -> this.driver.executeQuery(
-                "SELECT `data` FROM " + this.name,
-                resultSet -> {
-                    Collection<T> result = new ArrayList<>();
-                    while (resultSet.next()) {
-                        byte[] bytes = resultSet.getBytes("data");
-                        if (bytes == null) {
-                            continue;
-                        }
-
-                        this.deserializer.deserialize(new ThreadSaveGrowingByteBuffer(Unpooled.wrappedBuffer(bytes))).ifPresent(result::add);
-                    }
-
-                    return result;
-                }, new ArrayList<>()
-        ), this.pool);
+    public @NotNull UpdateOperationBuilder<T> update(@NotNull UpdateOperation operation) {
+        return new SQLUpdateOperationBuilder<>(this, this.driver, operation);
     }
 
     @Override
-    public CompletableFuture<Long> getSize() {
+    public @NotNull CompletableFuture<Long> getSize() {
         return CompletableFuture.supplyAsync(() -> this.driver.executeQuery(
                 "SELECT COUNT(*) FROM " + this.name,
                 resultSet -> {
@@ -129,16 +91,21 @@ public class H2DatabaseTable<T> implements DatabaseTable<T> {
 
                     return -1L;
                 }, -1L
-        ), this.pool);
+        ));
     }
 
     @Override
-    public CompletableFuture<Void> clear() {
+    public @NotNull CompletableFuture<Void> clear() {
         return CompletableFuture.runAsync(() -> this.driver.executeUpdate("TRUNCATE TABLE " + this.name));
     }
 
     @Override
-    public CompletableFuture<Void> delete() {
+    public @NotNull CompletableFuture<Void> delete() {
         return CompletableFuture.runAsync(() -> this.driver.executeUpdate("DROP TABLE " + this.name));
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return this.name;
     }
 }

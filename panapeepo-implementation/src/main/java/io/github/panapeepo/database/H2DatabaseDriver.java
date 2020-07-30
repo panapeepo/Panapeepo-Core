@@ -24,12 +24,12 @@
 package io.github.panapeepo.database;
 
 import io.github.panapeepo.api.database.DatabaseDriver;
-import io.github.panapeepo.api.database.DatabaseTable;
+import io.github.panapeepo.api.database.Table;
 import io.github.panapeepo.api.database.serializer.ByteToObjectDeserializer;
 import io.github.panapeepo.api.database.serializer.ObjectToByteSerializer;
 import io.github.panapeepo.database.util.SQLFunction;
 import org.h2.Driver;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.sql.*;
@@ -52,7 +52,7 @@ public class H2DatabaseDriver implements DatabaseDriver {
     }
 
     @Override
-    public Collection<String> getTableNames() {
+    public @NotNull Collection<String> getTableNames() {
         return this.executeQuery(
                 "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='PUBLIC'",
                 resultSet -> {
@@ -67,11 +67,11 @@ public class H2DatabaseDriver implements DatabaseDriver {
     }
 
     @Override
-    public <T> DatabaseTable<T> getTable(String name, ObjectToByteSerializer<T> serializer, ByteToObjectDeserializer<T> deserializer) {
-        return new H2DatabaseTable<>(this, name, serializer, deserializer);
+    public @NotNull <T> Table<T> getTable(@NotNull String name, @NotNull String scheme, @NotNull ObjectToByteSerializer<T> serializer, @NotNull ByteToObjectDeserializer<T> deserializer) {
+        return new H2DatabaseTable<>(this, name, scheme, serializer, deserializer);
     }
 
-    public void executeUpdate(String query, Object... objects) {
+    public int executeUpdate(String query, Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
             int i = 1;
             for (Object object : objects) {
@@ -82,13 +82,13 @@ public class H2DatabaseDriver implements DatabaseDriver {
                 }
             }
 
-            preparedStatement.executeUpdate();
+            return preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
+            return -1;
         }
     }
 
-    @Nullable
     public <T> T executeQuery(String query, SQLFunction<ResultSet, T> function, T defaultValue, Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
             int i = 1;

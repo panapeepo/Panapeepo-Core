@@ -4,7 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import io.github.panapeepo.api.Panapeepo;
-import io.github.panapeepo.api.database.DatabaseTable;
+import io.github.panapeepo.api.database.Table;
+import io.github.panapeepo.api.database.query.QueryOperation;
 import io.github.panapeepo.api.entity.PanapeepoGuild;
 import io.github.panapeepo.api.provider.PanapeepoGuildProvider;
 import io.github.panapeepo.entity.PanapeepoGuildSerializer;
@@ -15,23 +16,26 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultPanapeepoGuildProvider implements PanapeepoGuildProvider {
 
-    private final DatabaseTable<PanapeepoGuild> databaseTable;
+    private final Table<PanapeepoGuild> databaseTable;
 
-    private final LoadingCache<Long, PanapeepoGuild> cache = CacheBuilder.newBuilder().
-            expireAfterWrite(30, TimeUnit.MINUTES).build(new CacheLoader<>() {
-        @Override
-        public PanapeepoGuild load(@NotNull Long key) throws Exception {
-            var object = databaseTable.getObject(key.toString()).get();
-            if(object == null) {
-                throw new Exception();
-            }
-            return object;
-        }
-    });
+    private final LoadingCache<Long, PanapeepoGuild> cache = CacheBuilder
+            .newBuilder()
+            .expireAfterWrite(30, TimeUnit.MINUTES)
+            .build(new CacheLoader<>() {
+                @Override
+                public PanapeepoGuild load(@NotNull Long key) throws Exception {
+                    var object = databaseTable.select().where("key", QueryOperation.EQUALS, key).findOne().get(5, TimeUnit.SECONDS);
+                    if (object == null) {
+                        throw new Exception();
+                    }
+
+                    return object;
+                }
+            });
 
     public DefaultPanapeepoGuildProvider(Panapeepo panapeepo) {
         var serializer = new PanapeepoGuildSerializer();
-        this.databaseTable = panapeepo.getDatabase().getTable("guilds", serializer, serializer);
+        this.databaseTable = panapeepo.getDatabase().getTable("guilds", "(`key` TEXT, `data` LONGBLOB)", serializer, serializer);
     }
 
     @Override
@@ -45,7 +49,7 @@ public class DefaultPanapeepoGuildProvider implements PanapeepoGuildProvider {
 
     @Override
     public void updateGuild(PanapeepoGuild guild) {
-        this.cache.invalidate(guild.getId());
-        this.databaseTable.insertObject(guild.getId() + "", guild);
+        this.cache.put(guild.getId(), guild);
+        this.databaseTable.insert().set("key", guild.getId()).set("data", this.databaseTable.getSerializer().serialize(guild)).execute();
     }
 }
